@@ -8,3 +8,68 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Extracting Amazon Product Reviews
+# 4. Select 5 categories from Amazon and select 30 products from each category.
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+
+url <- 'https://www.amazon.com/s?rh=n%3A3760911%2Cn%3A11058281&dc&qid=1730855869&rnid=3760911&ref=sr_nr_n_1i'
+
+session <- bow(url,
+               user_agent = "Educational")
+session
+
+```
+# 5. Extract the price, description, ratings and reviews of each product.
+```{r}
+page1 <- read_html(url)
+price1 <- scrape(session) %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text
+
+data1 <- data.frame(
+    priceDf1 = price1[1:30])
+
+data1
+
+description1 <- page %>% html_nodes('span.a-size-large product-title-word-break') %>% html_text()
+
+data2 <- data.frame(
+    desDf1 = description1[1:30])
+
+data2
+
+ratings1 <- scrape(session) %>%
+  html_nodes('span.a-icon-alt') %>% 
+  html_text
+
+data3 <- data.frame(
+    ratingDf1 = ratings1[1:30])
+
+data3
+
+reviews1 <- scrape(session) %>%
+  html_nodes('#acrCustomerReviewText') %>% 
+  html_text
+
+data4 <- data.frame(
+    reviewsDf1 = reviews1[1:30])
+
+data4
+```
+# 6. Describe the data you have extracted.
+```{r}
+library(psych)
+describe(data1)
+```
+
+
+# 7. What will be your use case for the data you have extracted?
+# 8. Create graphs regarding the use case. And briefly explain it.
+# 9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
+# 10. Rank the products of each category by price and ratings. Explain briefly
