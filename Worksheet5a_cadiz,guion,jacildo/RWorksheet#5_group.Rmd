@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
 ```{r}
-library(rvest)
+library(rvest)  
 library(httr)
 library(dplyr)
 library(polite)
@@ -50,7 +50,7 @@ split_df <- data.frame(do.call(rbind,split_df))
 
 colnames(split_df) <- c("ranks","title")
 
-head(split_df)
+head(split_df) 
 
 
 
@@ -92,6 +92,7 @@ session
 library(rvest)
 
 page1 <- read_html(url)
+
 price1 <- scrape(session) %>%
   html_nodes('.a-price .a-offscreen') %>% 
   html_text
@@ -101,7 +102,7 @@ data1 <- data.frame(
 
 data1
 
-description1 <- page1 %>% html_nodes('span.a-size-large product-title-word-break') %>% html_text()
+description1 <- page1 %>% html_nodes('span.a-text-normal') %>% html_text()
 
 data2 <- data.frame(
     desDf1 = description1[1:30])
@@ -118,7 +119,7 @@ data3 <- data.frame(
 data3
 
 reviews1 <- scrape(session) %>%
-  html_nodes('#acrCustomerReviewText') %>% 
+  html_nodes('.a-expander-partial-collapse-content') %>% 
   html_text
 
 data4 <- data.frame(
