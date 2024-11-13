@@ -10,7 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 # 1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
 
-# It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
 ```{r}
 library(rvest)  
 library(httr)
@@ -21,44 +20,75 @@ library(rmarkdown)
 
 url_Imdb <- 'https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250'
 
-sesh <- bow(url_Imdb,
+session <- bow(url_Imdb,
                user_agent = "Educational")
-sesh
+session
 ```
 ```{r}
 library(rvest)
 library(dplyr)
 
-title <- character(0)
-rank <- character(0)
-rating <- character(0)
-
-title <- scrape(sesh) %>%
+title <- read_html(url_Imdb) %>%
   html_nodes('h3.ipc-title__text') %>% 
   html_text
 
 
 dataB <- data.frame(
-    titleDf = title[1:50])
+    titleDf = title[2:26])
 
 dataB
+```
+```{r}
+title_rank <- as.data.frame(dataB, stringsAsFactors = FALSE)
+colnames(title_rank) <- "rank"
 
-colnames(dataB) <- "ranks"
+split_df <- strsplit(as.character(title_rank$rank), "\\.", fixed = FALSE)
+split_df <- data.frame(do.call(rbind, split_df), stringsAsFactors = FALSE)
+colnames(split_df) <- c("rank", "title")
 
-split_df <- strsplit(as.character(dataB$ranks),".",fixed = TRUE)
-split_df <- data.frame(do.call(rbind,split_df))
+split_df <- split_df %>% select(rank, title)
 
-colnames(split_df) <- c("ranks","title")
+split_df$title <- trimws(split_df$title)
 
-head(split_df) 
-
-
-
-
-
-
+title_rank <- split_df
+title_rank
 ```
 
+```{r}
+rating <- read_html(url_Imdb) %>%
+  html_nodes('.ipc-rating-star--rating') %>%
+  html_text()
+
+voted <- read_html(url_Imdb) %>%
+  html_nodes('.ipc-rating-star--voteCount') %>%
+  html_text()
+  vot <- gsub('[()]', '', voted)
+
+
+episodes <- read_html(url_Imdb) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+  ep1 <- gsub('[eps]', '', episodes)
+  ep2 <- as.numeric(ep1)
+
+years <- read_html(url_Imdb) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_text()
+```
+```{r}
+tv_shows <- data.frame(
+  Rank = title_rank[,1],
+  Title = title_rank[,2],
+  Rating = rating,
+  Voters = voted,
+  Episodes = episodes,
+  Year = years
+)
+tv_shows
+```
+# It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
+
+#DAVE'S PART
 
 
 
