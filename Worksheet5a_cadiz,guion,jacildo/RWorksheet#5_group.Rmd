@@ -88,7 +88,49 @@ tv_shows
 ```
 # It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
 
-#DAVE'S PART
+# Continuation of the project by - John Dave Cadiz
+```{r}
+home_link <- 'https://www.imdb.com/chart/toptv/'
+main_page <- read_html(home_link)
+
+links <- main_page %>%
+  html_nodes("a.ipc-title-link-wrapper") %>%
+  html_attr("href")
+
+# Loop to get link of each show's page
+show_url_df <- do.call(rbind, lapply(links, function(link) {
+  complete_link <- paste0("https://imdb.com", link)
+
+  #loop to get the link for user review page
+ usrv_link <- read_html(complete_link)
+  usrv_link_page <- usrv_link %>%
+    html_nodes('a.isReview') %>%
+    html_attr("href")
+  
+  #loop to extract critic reviews
+   critic <- usrv_link %>%
+              html_nodes("span.score") %>%
+              html_text()
+  critic_df <- data.frame(Critic_Reviews = critic[2], stringsAsFactors = FALSE)
+  
+  #loop to extract pop rating
+ pop_rating <- usrv_link %>%
+              html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
+              html_text()
+  
+  #loop to get user reviews of each shows
+   usrv <- read_html(paste0("https://imdb.com", usrv_link_page[1]))
+  usrv_count <- usrv %>%
+    html_nodes('[data-testid="tturv-total-reviews"]') %>%
+    html_text()
+
+ return(data.frame(Show_Link = complete_link, User_Reviews = usrv_count, Critic_Reviews = critic[2], Popularity_Rating = pop_rating)) 
+}))
+
+shows <- cbind(tv_shows, show_url_df)
+shows
+```
+
 
 
 
