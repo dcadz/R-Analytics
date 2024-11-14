@@ -87,7 +87,43 @@ tv_shows <- data.frame(
 tv_shows
 ```
 # It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
+# Continuation of the project by - John Dave Cadiz
+```{r}
+home_link <- 'https://www.imdb.com/chart/toptv/'
+main_page <- read_html(home_link)
 
+links <- main_page %>%
+  html_nodes("a.ipc-title-link-wrapper") %>%
+  html_attr("href")
+
+show_url_df <- do.call(rbind, lapply(links, function(link) {
+  complete_link <- paste0("https://imdb.com", link)
+
+ usrv_link <- read_html(complete_link)
+  usrv_link_page <- usrv_link %>%
+    html_nodes('a.isReview') %>%
+    html_attr("href")
+  
+   critic <- usrv_link %>%
+              html_nodes("span.score") %>%
+              html_text()
+  critic_df <- data.frame(Critic_Reviews = critic[2], stringsAsFactors = FALSE)
+  
+ pop_rating <- usrv_link %>%
+              html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
+              html_text()
+  
+   usrv <- read_html(paste0("https://imdb.com", usrv_link_page[1]))
+  usrv_count <- usrv %>%
+    html_nodes('[data-testid="tturv-total-reviews"]') %>%
+    html_text()
+
+ return(data.frame(Show_Link = complete_link, User_Reviews = usrv_count, Critic_Reviews = critic[2], Popularity_Rating = pop_rating)) 
+}))
+
+shows <- cbind(tv_shows, show_url_df)
+shows
+```
 #chacha
 2. From the 50 tv shows, select at least 5 tv shows to scrape 20 user reviews that will include the reviewer’s
 name, date of reviewed, user rating, title of the review, the numbers for “is helpful” and “is not helpful”,
@@ -174,9 +210,6 @@ all_reviews <- lapply(show_urls, scrape_reviews)
 reviews_df <- bind_rows(all_reviews)
 print(reviews_df)
 ```
-
-
-#DAVE'S PART
 
 
 
