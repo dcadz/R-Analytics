@@ -88,6 +88,94 @@ tv_shows
 ```
 # It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
 
+#chacha
+2. From the 50 tv shows, select at least 5 tv shows to scrape 20 user reviews that will include the reviewer’s
+name, date of reviewed, user rating, title of the review, the numbers for “is helpful” and “is not helpful”,
+and text reviews.
+```{r}
+library(rvest)  
+library(dplyr)
+
+# List of IMDb URLs for 5 selected shows 
+show_urls <- c(
+  'https://www.imdb.com/title/tt0903747/reviews/?ref_=tt_ov_urv',   # Breaking Bad
+  'https://www.imdb.com/title/tt5491994/reviews/?ref_=tt_ov_ql_2',  # Planet Earth II
+  'https://www.imdb.com/title/tt0795176/reviews/?ref_=tt_ov_ql_2',  # Planet Earth
+  'https://www.imdb.com/title/tt0185906/reviews/?ref_=tt_ov_ql_2',  # Band of Brothers
+  'https://www.imdb.com/title/tt7366338/reviews/?ref_=tt_ov_ql_2'   # Chernobyl
+)
+
+scrape_reviews <- function(show_url) {
+  
+  review_page <- read_html(show_url)
+  
+  # Show name
+  show_name <- review_page %>%
+    html_nodes('h2') %>%      
+    html_text() %>%
+    trimws()
+
+  # Reviewers' names
+  reviewers <- review_page %>%
+    html_nodes('a.ipc-link--base[data-testid="author-link"]') %>%
+    html_text()
+
+  # Review dates
+  review_dates <- review_page %>%
+    html_nodes('.review-date') %>%
+    html_text()
+
+  # User ratings
+  user_ratings <- review_page %>%
+    html_nodes('.ipc-rating-star--rating') %>%
+    html_text() %>%
+    as.numeric()
+
+  # Review titles
+  review_titles <- review_page %>%
+    html_nodes('h3.ipc-title__text') %>%
+    html_text()
+
+  # Helpful count
+  helpful_count <- review_page %>%
+    html_nodes('.ipc-voting__label__count--up') %>%
+    html_text() %>%
+    as.numeric()
+
+  # Not helpful count
+  not_helpful_count <- review_page %>%
+    html_nodes('.ipc-voting__label__count--down') %>%
+    html_text() %>%
+    as.numeric()
+
+  # Review text
+  review_text <- review_page %>%
+    html_nodes('.ipc-html-content-inner-div') %>%
+    html_text()
+  
+  review_text <- trimws(review_text) 
+
+  # DataFrame
+  reviews <- data.frame(
+    Show = show_name,
+    Reviewer = reviewers[1:20],
+    Date = review_dates[1:20],
+    UserRating = user_ratings[1:20],
+    ReviewTitle = review_titles[1:20],
+    HelpfulCount = helpful_count[1:20],
+    NotHelpfulCount = not_helpful_count[1:20],
+    ReviewText = review_text[1:20]
+  )
+  
+  return(reviews)
+}
+
+all_reviews <- lapply(show_urls, scrape_reviews)
+reviews_df <- bind_rows(all_reviews)
+print(reviews_df)
+```
+
+
 #DAVE'S PART
 
 
