@@ -87,7 +87,6 @@ tv_shows <- data.frame(
 tv_shows
 ```
 # It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
-
 # Continuation of the project by - John Dave Cadiz
 ```{r}
 home_link <- 'https://www.imdb.com/chart/toptv/'
@@ -97,28 +96,23 @@ links <- main_page %>%
   html_nodes("a.ipc-title-link-wrapper") %>%
   html_attr("href")
 
-# Loop to get link of each show's page
 show_url_df <- do.call(rbind, lapply(links, function(link) {
   complete_link <- paste0("https://imdb.com", link)
 
-  #loop to get the link for user review page
  usrv_link <- read_html(complete_link)
   usrv_link_page <- usrv_link %>%
     html_nodes('a.isReview') %>%
     html_attr("href")
   
-  #loop to extract critic reviews
    critic <- usrv_link %>%
               html_nodes("span.score") %>%
               html_text()
   critic_df <- data.frame(Critic_Reviews = critic[2], stringsAsFactors = FALSE)
   
-  #loop to extract pop rating
  pop_rating <- usrv_link %>%
               html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
               html_text()
   
-  #loop to get user reviews of each shows
    usrv <- read_html(paste0("https://imdb.com", usrv_link_page[1]))
   usrv_count <- usrv %>%
     html_nodes('[data-testid="tturv-total-reviews"]') %>%
@@ -130,7 +124,92 @@ show_url_df <- do.call(rbind, lapply(links, function(link) {
 shows <- cbind(tv_shows, show_url_df)
 shows
 ```
+#chacha
+2. From the 50 tv shows, select at least 5 tv shows to scrape 20 user reviews that will include the reviewer’s
+name, date of reviewed, user rating, title of the review, the numbers for “is helpful” and “is not helpful”,
+and text reviews.
+```{r}
+library(rvest)  
+library(dplyr)
 
+# List of IMDb URLs for 5 selected shows 
+show_urls <- c(
+  'https://www.imdb.com/title/tt0903747/reviews/?ref_=tt_ov_urv',   # Breaking Bad
+  'https://www.imdb.com/title/tt5491994/reviews/?ref_=tt_ov_ql_2',  # Planet Earth II
+  'https://www.imdb.com/title/tt0795176/reviews/?ref_=tt_ov_ql_2',  # Planet Earth
+  'https://www.imdb.com/title/tt0185906/reviews/?ref_=tt_ov_ql_2',  # Band of Brothers
+  'https://www.imdb.com/title/tt7366338/reviews/?ref_=tt_ov_ql_2'   # Chernobyl
+)
+
+scrape_reviews <- function(show_url) {
+  
+  review_page <- read_html(show_url)
+  
+  # Show name
+  show_name <- review_page %>%
+    html_nodes('h2') %>%      
+    html_text() %>%
+    trimws()
+
+  # Reviewers' names
+  reviewers <- review_page %>%
+    html_nodes('a.ipc-link--base[data-testid="author-link"]') %>%
+    html_text()
+
+  # Review dates
+  review_dates <- review_page %>%
+    html_nodes('.review-date') %>%
+    html_text()
+
+  # User ratings
+  user_ratings <- review_page %>%
+    html_nodes('.ipc-rating-star--rating') %>%
+    html_text() %>%
+    as.numeric()
+
+  # Review titles
+  review_titles <- review_page %>%
+    html_nodes('h3.ipc-title__text') %>%
+    html_text()
+
+  # Helpful count
+  helpful_count <- review_page %>%
+    html_nodes('.ipc-voting__label__count--up') %>%
+    html_text() %>%
+    as.numeric()
+
+  # Not helpful count
+  not_helpful_count <- review_page %>%
+    html_nodes('.ipc-voting__label__count--down') %>%
+    html_text() %>%
+    as.numeric()
+
+  # Review text
+  review_text <- review_page %>%
+    html_nodes('.ipc-html-content-inner-div') %>%
+    html_text()
+  
+  review_text <- trimws(review_text) 
+
+  # DataFrame
+  reviews <- data.frame(
+    Show = show_name,
+    Reviewer = reviewers[1:20],
+    Date = review_dates[1:20],
+    UserRating = user_ratings[1:20],
+    ReviewTitle = review_titles[1:20],
+    HelpfulCount = helpful_count[1:20],
+    NotHelpfulCount = not_helpful_count[1:20],
+    ReviewText = review_text[1:20]
+  )
+  
+  return(reviews)
+}
+
+all_reviews <- lapply(show_urls, scrape_reviews)
+reviews_df <- bind_rows(all_reviews)
+print(reviews_df)
+```
 
 
 
