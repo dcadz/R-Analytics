@@ -210,17 +210,26 @@ all_reviews <- lapply(show_urls, scrape_reviews)
 reviews_df <- bind_rows(all_reviews)
 print(reviews_df)
 ```
+# 3. Create a time series graph for the tv shows released by year. Which year has the most number of tv shows released?
+# graphed by Cadiz, JD
+```{r}
+library(ggplot2)
 
+shows$Year <- as.numeric(substr(shows$Year, 1, 4))
+shows <- shows %>% filter(!is.na(Year))
 
+shows_by_year <- shows %>%
+  group_by(Year) %>%
+  summarize(Number_of_Shows = n(), .groups = "drop")
 
-
-
-
-
-
-
-
-
+ggplot(shows_by_year, aes(x = Year, y = Number_of_Shows)) +
+  geom_line(color = "pink") +
+  geom_point(color = "purple") +
+  labs(title = "Number of TV Shows Released by Year",
+       x = "Year",
+       y = "Number of TV Shows") +
+  theme_minimal()
+```
 # Extracting Amazon Product Reviews
 # 4. Select 5 categories from Amazon and select 30 products from each category.
 ```{r}
@@ -231,7 +240,7 @@ library(polite)
 library(kableExtra)
 library(rmarkdown)
 
-url <- 'https://www.amazon.com/s?rh=n%3A3760911%2Cn%3A11058281&dc&qid=1730855869&rnid=3760911&ref=sr_nr_n_1i'
+url <- 'https://www.amazon.com/Makeup-Cosmetics-Products-Beauty/b?ie=UTF8&node=11058281'
 
 session <- bow(url,
                user_agent = "Educational")
@@ -245,44 +254,34 @@ library(rvest)
 page1 <- read_html(url)
 
 price1 <- scrape(session) %>%
-  html_nodes('.a-price .a-offscreen') %>% 
-  html_text
+  html_nodes('.a-price span') %>% 
+  html_text (trim = TRUE) %>% 
+  gsub("\\$", "", .)
 
-data1 <- data.frame(
-    priceDf1 = price1[1:30])
-
-data1
-
-description1 <- page1 %>% html_nodes('span.a-text-normal') %>% html_text()
-
-data2 <- data.frame(
-    desDf1 = description1[1:30])
-
-data2
+description1 <- scrape(session) %>%
+    html_nodes('.s-line-clamp-3') %>% 
+    html_text (trim = TRUE) %>%
+    gsub("\n", "", .) 
 
 ratings1 <- scrape(session) %>%
-  html_nodes('span.a-icon-alt') %>% 
+  html_nodes('.a-icon-star-mini') %>% 
   html_text
-
-data3 <- data.frame(
-    ratingDf1 = ratings1[1:30])
-
-data3
 
 reviews1 <- scrape(session) %>%
-  html_nodes('.a-expander-partial-collapse-content') %>% 
+  html_nodes('.a-expander-partial-collapse-content span') %>% 
   html_text
 
-data4 <- data.frame(
-    reviewsDf1 = reviews1[1:30])
-
-data4
-
+amazondf <- data.frame(Prices = price1[1:30],
+                       Descriptions = description1[1:30],
+                       Ratingss = ratings1[1:30],
+                       Reviewss = reviews1[1:30],
+                       stringsAsFactors = FALSE)
+amazondf
 ```
 # 6. Describe the data you have extracted.
 ```{r}
 library(psych)
-describe(data1)
+describe(amazondf)
 ```
 
 
@@ -290,3 +289,4 @@ describe(data1)
 # 8. Create graphs regarding the use case. And briefly explain it.
 # 9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
 # 10. Rank the products of each category by price and ratings. Explain briefly
+
