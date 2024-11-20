@@ -8,3 +8,72 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+
+url <- 'https://www.amazon.sg/?ref_=mr_referred_us_sg_sg'
+
+session <- bow(url,
+               user_agent = "Educational")
+session
+
+```
+
+```{r}
+categories <- list (
+  makeup = 'https://www.amazon.sg/gp/browse.html?node=6397277051&ref_=nav_em__makeup_0_2_17_7',
+  skincare = 'https://www.amazon.sg/gp/browse.html?node=6397273051&ref_=nav_em__skin_care_0_2_17_10',
+  haircare = 'https://www.amazon.sg/gp/browse.html?node=6397272051&ref_=nav_em__fragrances_0_2_17_4',
+  fragrance = 'https://www.amazon.sg/gp/browse.html?node=6397272051&ref_=nav_em__fragrances_0_2_17_4',
+  nailcare = 'https://www.amazon.sg/gp/browse.html?node=6397276051&ref_=nav_em__nail_care_0_2_17_9')
+
+```
+
+
+```{r}
+library(rvest)
+
+amazondf <- data.frame()
+
+for (category in names(categories)) {
+  url <- categories[[category]]
+
+price1 <- scrape(session) %>%
+  html_nodes('.a-price span') %>% 
+  html_text (trim = TRUE) %>% 
+  gsub("\\$", "", .)
+
+description1 <- scrape(session) %>%
+    html_nodes('.a-size-large product-title-word-break') %>% 
+    html_text (trim = TRUE) %>%
+    gsub("\n", "", .) 
+
+ratings1 <- scrape(session) %>%
+  html_nodes('.a-icon-star-mini') %>% 
+  html_text
+
+reviews1 <- scrape(session) %>%
+  html_nodes('.a-expander-partial-collapse-content span') %>% 
+  html_text
+
+categorydf <- data.frame(
+                      Categories = category,
+                      Prices_amazon = price1[1:30],
+                       Descriptions_amazon = description1[1:30],
+                       Ratings_amazon = ratings1[1:30],
+                       Reviewss_amazon = reviews1[1:30],
+                       stringsAsFactors = FALSE)
+ 
+amazondf <- bind_rows(amazondf, categorydf)
+}
+
+amazondf
+```
+```
+
