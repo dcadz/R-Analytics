@@ -1,0 +1,10 @@
+---
+title: "Worksheet#5B_group"
+author: "Cadiz, Guion, Jacildo"
+date: "2024-11-20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
