@@ -2,7 +2,9 @@
 title: "Worksheet#5a_group"
 author: "Cadiz, Guion, Jacildo"
 date: "2024-11-06"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -532,5 +534,50 @@ Each data frame corresponds to each category namely; makeup, skincare, hair care
 # 7. What will be your use case for the data you have extracted?
 # 8. Create graphs regarding the use case. And briefly explain it.
 # 9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
+```{r}
+#Created By John Dave Cadiz
+
+amazondf1$Category <- "MakeUp"
+amazondf2$Category <- "SkinCare"
+amazondf3$Category <- "HairCare"
+amazondf4$Category <- "Fragrance"
+amazondf5$Category <- "NailCare"
+
+
+combined_df <- rbind(amazondf1, amazondf2, amazondf3, amazondf4, amazondf5)
+
+combined_df$Prices_amazon <- as.numeric(combined_df$Prices_amazon)
+combined_df$Ratings_amazon <- as.numeric(combined_df$Ratings_amazon)
+
+
+plot_data <- combined_df[!is.na(combined_df$Prices_amazon) & !is.na(combined_df$Ratings_amazon), ]
+category_colors <- as.factor(plot_data$Category)
+
+#Basic Plotting
+plot(plot_data$Ratings_amazon, plot_data$Prices_amazon,
+     col = category_colors,
+     pch = 19,
+     xlab = "Ratings (Out of 5)",
+     ylab = "Price ($)",
+     main = "Price vs Ratings by Category")
+
+legend("topright", legend = levels(category_colors), col = 1:5, pch = 19)
+
+#ggplot plotting
+
+library(ggplot2)
+
+ggplot(plot_data, aes(x = Ratings_amazon, y = Prices_amazon, color = Category)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(title = "Price vs Ratings by Category",
+       x = "Ratings (Out of 5)",
+       y = "Price ($)") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+```
+
 # 10. Rank the products of each category by price and ratings. Explain briefly
+
+
 
