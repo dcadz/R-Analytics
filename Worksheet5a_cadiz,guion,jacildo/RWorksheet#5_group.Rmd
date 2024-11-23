@@ -3,6 +3,7 @@ title: "Worksheet#5a_group"
 author: "Cadiz, Guion, Jacildo"
 date: "2024-11-06"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -533,6 +534,7 @@ Each data frame corresponds to each category namely; makeup, skincare, hair care
 
 # 7. What will be your use case for the data you have extracted?
 # 8. Create graphs regarding the use case. And briefly explain it.
+
 # 9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
 ```{r}
 #Created By John Dave Cadiz
