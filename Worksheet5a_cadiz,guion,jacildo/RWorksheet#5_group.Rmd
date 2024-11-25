@@ -4,8 +4,6 @@ author: "Cadiz, Guion, Jacildo"
 date: "2024-11-06"
 output:
   pdf_document: default
-  html_document:
-    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -543,7 +541,7 @@ amazondf1$Category <- "MakeUp"
 amazondf2$Category <- "SkinCare"
 amazondf3$Category <- "HairCare"
 amazondf4$Category <- "Fragrance"
-amazondf5$Category <- "NailCare"
+amazondf5$Category <- "OralCare"
 
 
 combined_df <- rbind(amazondf1, amazondf2, amazondf3, amazondf4, amazondf5)
@@ -580,6 +578,45 @@ ggplot(plot_data, aes(x = Ratings_amazon, y = Prices_amazon, color = Category)) 
 ```
 
 # 10. Rank the products of each category by price and ratings. Explain briefly
+```{r}
+# Function to rank products by price and ratings
+rank_products <- function(data, category_name) {
+  cat("Ranking for", category_name, "Category\n\n")
+  
+  # Sort by Price
+  price_ranked <- data[order(as.numeric(data$Prices_amazon), decreasing = TRUE, na.last = TRUE), ]
+  cat("Top 5 Products by Price:\n")
+  print(head(price_ranked[, c("Descriptions_amazon", "Prices_amazon", "Ratings_amazon")], 5))
+  
+  # Sort by Ratings
+  rating_ranked <- data[order(as.numeric(data$Ratings_amazon), decreasing = TRUE, na.last = TRUE), ]
+  cat("\nTop 5 Products by Ratings:\n")
+  print(head(rating_ranked[, c("Descriptions_amazon", "Prices_amazon", "Ratings_amazon")], 5))
+  
+  cat("\n============================\n\n")
+}
 
+# Rank products for each category
+rank_products(amazondf1, "MakeUp")
+rank_products(amazondf2, "SkinCare")
+rank_products(amazondf3, "HairCare")
+rank_products(amazondf4, "Fragrance")
+rank_products(amazondf5, "OralCare")
+
+```
+```{r}
+#The products in each category tend to be chosen based on their price and ratings
+#because these metrics reflect perceived value and consumer trust. Highly-rated
+#products often gain popularity due to proven performance and customer 
+#satisfaction, even if they are mid-range or budget-friendly. Price also 
+#influences choice significantly; students and budget-conscious consumers are 
+#more likely to opt for affordable products unless premium features justify the 
+#higher cost. This trend highlights that in categories like skincare, haircare, 
+#and oral care, effective and reliable products are available at reasonable 
+#prices, making them accessible to a wider audience. Conversely,
+#luxury categories such as fragrances and specialized makeup often see a 
+#stronger correlation between price and desirability, reflecting brand 
+#prestige and exclusivity.
+```
 
 
