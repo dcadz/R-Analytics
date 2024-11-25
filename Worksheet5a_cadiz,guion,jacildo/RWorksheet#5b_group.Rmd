@@ -8,7 +8,8 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+1. Select 5 categories from Amazon and select 30 products from each category. Out of the 30 products, pick 10 products and extract 20 reviews in each one which includes:
+reviewer, date, individual rating, text review, title of review, and verified purchase.
 ```{r}
 library(rvest)
 library(httr)
@@ -17,63 +18,284 @@ library(polite)
 library(kableExtra)
 library(rmarkdown)
 
-url <- 'https://www.amazon.sg/?ref_=mr_referred_us_sg_sg'
+makeup_url <- 'https://www.amazon.com/s?k=BLUSH+ON&rh=n%3A11058281&ref=nb_sb_noss'
 
-session <- bow(url,
+session1 <- bow(makeup_url,
                user_agent = "Educational")
-session
+session1
 
 ```
-
-```{r}
-categories <- list (
-  makeup = 'https://www.amazon.sg/gp/browse.html?node=6397277051&ref_=nav_em__makeup_0_2_17_7',
-  skincare = 'https://www.amazon.sg/gp/browse.html?node=6397273051&ref_=nav_em__skin_care_0_2_17_10',
-  haircare = 'https://www.amazon.sg/gp/browse.html?node=6397272051&ref_=nav_em__fragrances_0_2_17_4',
-  fragrance = 'https://www.amazon.sg/gp/browse.html?node=6397272051&ref_=nav_em__fragrances_0_2_17_4',
-  nailcare = 'https://www.amazon.sg/gp/browse.html?node=6397276051&ref_=nav_em__nail_care_0_2_17_9')
-
-```
-
-
 ```{r}
 library(rvest)
 
-amazondf <- data.frame()
+amazondf1 <- data.frame()
 
-for (category in names(categories)) {
-  url <- categories[[category]]
+page1 <- scrape(session1)
 
-price1 <- scrape(session) %>%
-  html_nodes('.a-price span') %>% 
-  html_text (trim = TRUE) %>% 
-  gsub("\\$", "", .)
+price1 <- page1 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>% 
+  gsub("[^0-9\\.]", "", .)
 
-description1 <- scrape(session) %>%
-    html_nodes('.a-size-large product-title-word-break') %>% 
-    html_text (trim = TRUE) %>%
-    gsub("\n", "", .) 
+description1 <- page1 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text(trim = TRUE) %>%
+  gsub("\n", "", .)
 
-ratings1 <- scrape(session) %>%
-  html_nodes('.a-icon-star-mini') %>% 
-  html_text
+ratings1 <- page1 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
 
-reviews1 <- scrape(session) %>%
-  html_nodes('.a-expander-partial-collapse-content span') %>% 
-  html_text
+reviews1 <- page1 %>%
+  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
+  html_text()
 
-categorydf <- data.frame(
-                      Categories = category,
-                      Prices_amazon = price1[1:30],
-                       Descriptions_amazon = description1[1:30],
-                       Ratings_amazon = ratings1[1:30],
-                       Reviewss_amazon = reviews1[1:30],
-                       stringsAsFactors = FALSE)
- 
-amazondf <- bind_rows(amazondf, categorydf)
-}
+price1 <- price1[1:min(30, length(price1))]
+description1 <- description1[1:min(30, length(description1))]
+ratings1 <- ratings1[1:min(30, length(ratings1))]
+reviews1 <- reviews1[1:min(30, length(reviews1))]
 
-amazondf
+price1 <- c(price1, rep(NA, 30 - length(price1)))
+description1 <- c(description1, rep(NA, 30 - length(description1)))
+ratings1 <- c(ratings1, rep(NA, 30 - length(ratings1)))
+reviews1 <- c(reviews1, rep(NA, 30 - length(reviews1)))
+
+
+amazondf1 <- data.frame(
+  Prices_amazon = price1,
+  Descriptions_amazon = description1,
+  Ratings_amazon = ratings1,
+  Reviewss_amazon = reviews1,
+  stringsAsFactors = FALSE
+)
+
+print(amazondf1)
+
+
 ```
-```
 
+```{r}
+skincare_url <- 'https://www.amazon.com/s?k=moisturizer&rh=n%3A11060451&ref=nb_sb_noss'
+
+session2 <- bow(skincare_url,
+               user_agent = "Educational")
+session2
+```
+```{r}
+library(rvest)
+
+amazondf2 <- data.frame()
+
+page2 <- scrape(session2)
+
+price2 <- page2 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>% 
+  gsub("[^0-9\\.]", "", .)
+
+description2 <- page2 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text(trim = TRUE) %>%
+  gsub("\n", "", .)
+
+ratings2 <- page2 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
+
+reviews2 <- page2 %>%
+  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
+  html_text()
+
+price2 <- price2[1:min(30, length(price2))]
+description2 <- description2[1:min(30, length(description2))]
+ratings2 <- ratings2[1:min(30, length(ratings2))]
+reviews2 <- reviews2[1:min(30, length(reviews2))]
+
+price2 <- c(price2, rep(NA, 30 - length(price2)))
+description2 <- c(description2, rep(NA, 30 - length(description2)))
+ratings2 <- c(ratings2, rep(NA, 30 - length(ratings2)))
+reviews2 <- c(reviews2, rep(NA, 30 - length(reviews2)))
+
+
+amazondf2 <- data.frame(
+  Prices_amazon = price2,
+  Descriptions_amazon = description2,
+  Ratings_amazon = ratings2,
+  Reviewss_amazon = reviews2,
+  stringsAsFactors = FALSE
+)
+
+print(amazondf2)
+
+
+```
+```{r}
+haircare_url <- 'https://www.amazon.com/s?k=shampoo&rh=n%3A11057241&ref=nb_sb_noss'
+
+session3 <- bow(haircare_url,
+               user_agent = "Educational")
+session3
+```
+```{r}
+library(rvest)
+
+amazondf3 <- data.frame()
+
+page3 <- scrape(session3)
+
+price3 <- page3 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>% 
+  gsub("[^0-9\\.]", "", .)
+
+description3 <- page3 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text(trim = TRUE) %>%
+  gsub("\n", "", .)
+
+ratings3 <- page3 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
+
+reviews3 <- page3 %>%
+  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
+  html_text()
+
+price3 <- price3[1:min(30, length(price3))]
+description3 <- description3[1:min(30, length(description3))]
+ratings3 <- ratings3[1:min(30, length(ratings3))]
+reviews3 <- reviews3[1:min(30, length(reviews3))]
+
+price3 <- c(price3, rep(NA, 30 - length(price3)))
+description3 <- c(description3, rep(NA, 30 - length(description3)))
+ratings3 <- c(ratings3, rep(NA, 30 - length(ratings3)))
+reviews3 <- c(reviews3, rep(NA, 30 - length(reviews3)))
+
+
+amazondf3 <- data.frame(
+  Prices_amazon = price3,
+  Descriptions_amazon = description3,
+  Ratings_amazon = ratings3,
+  Reviewss_amazon = reviews3,
+  stringsAsFactors = FALSE
+)
+
+print(amazondf3)
+
+
+```
+```{r}
+fragrance_url <- 'https://www.amazon.com/s?k=women&rh=n%3A11056591&ref=nb_sb_noss'
+
+session4 <- bow(fragrance_url,
+               user_agent = "Educational")
+session4
+```
+```{r}
+library(rvest)
+
+amazondf4 <- data.frame()
+
+page4 <- scrape(session4)
+
+price4 <- page4 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>% 
+  gsub("[^0-9\\.]", "", .)
+
+description4 <- page4 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text(trim = TRUE) %>%
+  gsub("\n", "", .)
+
+ratings4 <- page4 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
+
+reviews4 <- page4 %>%
+  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
+  html_text()
+
+price4 <- price4[1:min(30, length(price4))]
+description4 <- description4[1:min(30, length(description4))]
+ratings4 <- ratings4[1:min(30, length(ratings4))]
+reviews4 <- reviews4[1:min(30, length(reviews4))]
+
+price4 <- c(price4, rep(NA, 30 - length(price4)))
+description4 <- c(description4, rep(NA, 30 - length(description4)))
+ratings4 <- c(ratings4, rep(NA, 30 - length(ratings4)))
+reviews4 <- c(reviews4, rep(NA, 30 - length(reviews4)))
+
+
+amazondf4 <- data.frame(
+  Prices_amazon = price4,
+  Descriptions_amazon = description4,
+  Ratings_amazon = ratings4,
+  Reviewss_amazon = reviews4,
+  stringsAsFactors = FALSE
+)
+
+print(amazondf4)
+
+
+```
+```{r}
+oralcare_url <- 'https://www.amazon.com/s?k=toothbrush&rh=n%3A10079992011&ref=nb_sb_noss'
+
+session5 <- bow(oralcare_url,
+               user_agent = "Educational")
+session5
+```
+```{r}
+library(rvest)
+
+amazondf5 <- data.frame()
+
+page5 <- scrape(session5)
+
+price5 <- page5 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>% 
+  gsub("[^0-9\\.]", "", .)
+
+description5 <- page5 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text(trim = TRUE) %>%
+  gsub("\n", "", .)
+
+ratings5 <- page5 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
+
+reviews5 <- page5 %>%
+  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
+  html_text()
+
+price5 <- price5[1:min(30, length(price5))]
+description5 <- description5[1:min(30, length(description5))]
+ratings5 <- ratings5[1:min(30, length(ratings5))]
+reviews5 <- reviews5[1:min(30, length(reviews5))]
+
+price5 <- c(price5, rep(NA, 30 - length(price5)))
+description5 <- c(description5, rep(NA, 30 - length(description5)))
+ratings5 <- c(ratings5, rep(NA, 30 - length(ratings5)))
+reviews5 <- c(reviews5, rep(NA, 30 - length(reviews5)))
+
+
+amazondf5 <- data.frame(
+  Prices_amazon = price5,
+  Descriptions_amazon = description5,
+  Ratings_amazon = ratings5,
+  Reviewss_amazon = reviews5,
+  stringsAsFactors = FALSE
+)
+
+print(amazondf5)
+
+
+```
