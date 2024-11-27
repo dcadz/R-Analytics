@@ -530,7 +530,139 @@ Each data frame corresponds to each category namely; makeup, skincare, hair care
 
 
 # 7. What will be your use case for the data you have extracted?
+In this use case, we’ll explore pricing patterns across Amazon product  categories using R. We’ll group and average prices for categories like Makeup,  Skincare, and Hair Care, then create a bar graph to compare averages visually. 
+E-commerce managers and marketers can quickly identify higher or lower average 
+prices and make informed decisions. The clear visualization aids in sharing 
+insights with everyone involved.
 # 8. Create graphs regarding the use case. And briefly explain it.
-# 9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
-# 10. Rank the products of each category by price and ratings. Explain briefly
+```{r}
+library(ggplot2)
+library(dplyr)
 
+amazondf_all <- rbind(
+cbind(Category = "Makeup", amazondf1),
+cbind(Category = "Skincare", amazondf2),
+cbind(Category = "Hair Care", amazondf3),
+cbind(Category = "Fragrance", amazondf4),
+cbind(Category = "Oral Care", amazondf5)
+)
+
+amazondf_all$Prices_amazon <- as.numeric(amazondf_all$Prices_amazon)
+
+avg_prices <- amazondf_all %>%
+group_by(Category) %>%
+summarise(Average_Price = mean(Prices_amazon, na.rm = TRUE))
+
+ggplot(avg_prices, aes(x = Category, y = Average_Price, fill = Category)) +
+geom_bar(stat = "identity", show.legend = FALSE, color = "black", width = 0.6) +
+geom_text(
+aes(label = round(Average_Price, 2)),
+vjust = -0.5, size = 4, color = "black"
+) +
+labs(
+title = "Average Price Across Product Categories",
+x = "Category",
+y = "Average Price ($)"
+) +
+theme_minimal() +
+scale_fill_brewer(palette = "Set3") +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+The graph displays the average price of products in five categories. It allows 
+businesses to compare prices across categories, helping them set competitive 
+prices, position products effectively, and target the right customer groups. 
+This insight is valuable for adjusting pricing strategies based on market trends.
+
+# 9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
+# Created By John Dave Cadiz
+```{r}
+amazondf1$Category <- "MakeUp"
+amazondf2$Category <- "SkinCare"
+amazondf3$Category <- "HairCare"
+amazondf4$Category <- "Fragrance"
+amazondf5$Category <- "OralCare"
+
+
+combined_df <- rbind(amazondf1, amazondf2, amazondf3, amazondf4, amazondf5)
+
+combined_df$Prices_amazon <- as.numeric(combined_df$Prices_amazon)
+combined_df$Ratings_amazon <- as.numeric(combined_df$Ratings_amazon)
+
+
+plot_data <- combined_df[!is.na(combined_df$Prices_amazon) & !is.na(combined_df$Ratings_amazon), ]
+category_colors <- as.factor(plot_data$Category)
+
+#Basic Plotting
+plot(plot_data$Ratings_amazon, plot_data$Prices_amazon,
+col = category_colors,
+pch = 19,
+xlab = "Ratings (Out of 5)",
+ylab = "Price ($)",
+main = "Price vs Ratings by Category")
+
+legend("topright", legend = levels(category_colors), col = 1:5, pch = 19)
+
+#ggplot plotting
+
+library(ggplot2)
+
+ggplot(plot_data, aes(x = Ratings_amazon, y = Prices_amazon, color = Category)) +
+geom_point(size = 3, alpha = 0.7) +
+labs(title = "Price vs Ratings by Category",
+x = "Ratings (Out of 5)",
+y = "Price ($)") +
+theme_minimal() +
+theme(legend.title = element_blank())
+
+```
+
+# 10. Rank the products of each category by price and ratings. Explain briefly
+```{r}
+library(dplyr)
+
+amazondf1$Category <- "Makeup"
+amazondf2$Category <- "Skincare"
+amazondf3$Category <- "Haircare"
+amazondf4$Category <- "Fragrance"
+amazondf5$Category <- "Oral Care"
+
+combined_df <- rbind(amazondf1, amazondf2, amazondf3, amazondf4, amazondf5)
+
+combined_df$Prices_amazon <- as.numeric(combined_df$Prices_amazon)
+combined_df$Ratings_amazon <- as.numeric(combined_df$Ratings_amazon)
+
+ranked_df <- combined_df %>%
+arrange(Category, desc(Ratings_amazon), Prices_amazon) %>%
+group_by(Category) %>%
+mutate(Rank = row_number())
+
+top_ranked <- ranked_df %>%
+filter(Rank <= 5)
+
+print(top_ranked)
+
+library(ggplot2)
+
+ggplot(top_ranked, aes(x = reorder(Descriptions_amazon, -Rank), y = Ratings_amazon, fill = Category)) +
+geom_col(show.legend = FALSE) +
+coord_flip() +
+labs(
+title = "Top 5 Ranked Products by Category",
+x = "Product Description",
+y = "Ratings (Out of 5)"
+) +
+facet_wrap(~Category, scales = "free_y") +
+theme_minimal()
+```
+The products in each category tend to be chosen based on their price and ratings
+because these metrics reflect perceived value and consumer trust. Highly-rated
+products often gain popularity due to proven performance and customer 
+satisfaction, even if they are mid-range or budget-friendly. Price also 
+influences choice significantly; students and budget-conscious consumers are 
+more likely to opt for affordable products unless premium features justify the 
+higher cost. This trend highlights that in categories like skincare, haircare, 
+and oral care, effective and reliable products are available at reasonable 
+prices, making them accessible to a wider audience. Conversely,
+luxury categories such as fragrances and specialized makeup often see a 
+stronger correlation between price and desirability, reflecting brand 
+prestige and exclusivity.
