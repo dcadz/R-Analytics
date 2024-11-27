@@ -441,8 +441,8 @@ ratings4 <- page4 %>%
   gsub(" out of 5 stars", "", .)
 
 reviews4 <- page4 %>%
-  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
-  html_text()
+  html_nodes(".div.review-text-content") %>% 
+  html_text(trim = TRUE)
 
 price4 <- price4[1:min(30, length(price4))]
 description4 <- description4[1:min(30, length(description4))]
@@ -525,7 +525,7 @@ print(amazondf5)
 ```
 
 # 6. Describe the data you have extracted.
-# Guion
+# Guion 
 Each data frame corresponds to each category namely; makeup, skincare, hair care, fragrance, and oral care. Inside each data frame includes 30 products  and its prices, description, ratings, and reviews. All data are extracted as a character data type. The prices provide the cost of the products while the description summarizes the products key features. Moreover the ratings show how satisfied the customers were with the product and the reviews provide opinions of customers.
 
 
