@@ -8,8 +8,8 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-1. Select 5 categories from Amazon and select 30 products from each category. Out of the 30 products, pick 10 products and extract 20 reviews in each one which includes:
-reviewer, date, individual rating, text review, title of review, and verified purchase.
+# 1. Select 5 categories from Amazon and select 30 products from each category. 
+# Guion
 ```{r}
 library(rvest)
 library(httr)
@@ -299,3 +299,4 @@ print(amazondf5)
 
 
 ```
+# 2. Out of the 30 products, pick 10 products and extract 20 reviews in each one which includes reviewer, date, individual rating, text review, title of review, and verified purchase.
