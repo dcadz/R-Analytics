@@ -667,19 +667,16 @@ ggplot(top_ranked, aes(x = reorder(Descriptions_amazon, -Rank), y = Ratings_amaz
   theme_minimal()
 
 ```
-```{r}
-#The products in each category tend to be chosen based on their price and ratings
-#because these metrics reflect perceived value and consumer trust. Highly-rated
-#products often gain popularity due to proven performance and customer 
-#satisfaction, even if they are mid-range or budget-friendly. Price also 
-#influences choice significantly; students and budget-conscious consumers are 
-#more likely to opt for affordable products unless premium features justify the 
-#higher cost. This trend highlights that in categories like skincare, haircare, 
-#and oral care, effective and reliable products are available at reasonable 
-#prices, making them accessible to a wider audience. Conversely,
-#luxury categories such as fragrances and specialized makeup often see a 
-#stronger correlation between price and desirability, reflecting brand 
-#prestige and exclusivity.
-```
-
+The products in each category tend to be chosen based on their price and ratings
+because these metrics reflect perceived value and consumer trust. Highly-rated
+products often gain popularity due to proven performance and customer 
+satisfaction, even if they are mid-range or budget-friendly. Price also 
+influences choice significantly; students and budget-conscious consumers are 
+more likely to opt for affordable products unless premium features justify the 
+higher cost. This trend highlights that in categories like skincare, haircare, 
+and oral care, effective and reliable products are available at reasonable 
+prices, making them accessible to a wider audience. Conversely,
+luxury categories such as fragrances and specialized makeup often see a 
+stronger correlation between price and desirability, reflecting brand 
+prestige and exclusivity.
 
