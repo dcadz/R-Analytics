@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+# Cleaning the Data from a .csv file
+
 library(dplyr)
 library(tm)         
 library(tinytex)
