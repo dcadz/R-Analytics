@@ -55,4 +55,54 @@ geom_line(color = "blue") +
 labs(title = "Number of Tweets Over Time", x = "Time", y = "Number of Tweets") +
 theme_minimal()
 ```
+# The graph shows that tweets about Itaewon were few before midnight on October 29. A noticeable spike occurred after midnight, with the highest activity in the early hours of October 30. Activity levels decreased throughout the morning but rose again in the afternoon and evening.
+# Upon researching the timeline of events, we discovered that the Itaewon tragedy occurred at 10:30 PM on October 29. Reports indicate that the police confirmed the death toll at 2:30 AM, which likely contributed to the early morning peak in tweets.The rise in the evening may be due to more people becoming aware of and talking about the tragedy.
+
+# SENTIMENT ANALYSIS
+# The dataset contains tweets about the Itaewon tragedy in 2022 under the ‘text’ column. We aim to analyze the sentiment of these tweets to understand public reactions. By categorizing sentiments as either positive or negative and visualizing them, we can determine the overall tone of the conversations and explore how people responded emotionally to the event. 
+```{r}
+library(tidytext)
+library(dplyr)
+
+sentiments <- get_sentiments("bing")
+
+tweet_tokens <- tweetsDF %>%
+unnest_tokens(word, text) %>%
+inner_join(sentiments, by = "word")
+
+sentiment_counts <- tweet_tokens %>%
+count(sentiment) %>%
+mutate(percentage = n / sum(n) * 100)
+
+print(sentiment_counts)
+
+library(ggplot2)
+ggplot(sentiment_counts, aes(x = sentiment, y = percentage, fill = sentiment)) +
+geom_bar(stat = "identity") +
+labs(title = "Sentiment Analysis", x = "Sentiment", y = "Percentage") +
+theme_minimal()
+```
+# For our graph, the x-axis represents the sentiment categories (negative and positive), while the y-axis represents the percentage of tweets in each category. The bar graph indicates a higher percentage of negative tweets compared to positive ones. That highlights that the majority of tweets are negative. This indicates a strong emotional reaction to the event, possibly driven by distress, outrage, or grief.
+
+
+# ADDITIONAL GRAPH
+# The dataset contains tweets categorized by their source platforms, such as iPhone, Android, and others.For additional information, we wanted to identify which platforms users mostly used to engage with the content. 
+```{r}
+tweet_source_analysis <- tweets_df %>%
+group_by(tweetSource) %>%
+summarise(Number_of_Tweets = n()) %>%
+arrange(desc(Number_of_Tweets))
+
+
+ggplot(tweet_source_analysis, aes(x = reorder(tweetSource, -Number_of_Tweets), y = Number_of_Tweets)) +
+geom_bar(stat = "identity", fill = "skyblue") +
+labs(
+title = "Number of Tweets by Tweet Source",
+x = "Tweet Source",
+y = "Number of Tweets"
+) +
+theme_minimal() +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+# The bar graph visualizes the number of tweets categorized by their source.The x-axis represents the tweet sources (e.g., iPhone, Android, others), while the y-axis shows the total number of tweets from each sourceThe bars indicate the volume of tweets contributed by each platform, with iPhone and Android having significantly higher counts than other sources.
 
