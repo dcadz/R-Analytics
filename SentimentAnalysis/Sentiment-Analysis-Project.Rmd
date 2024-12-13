@@ -1,0 +1,11 @@
+---
+title: "Sentiment-Analysis"
+author: "Cadiz, Guion, Jacildo"
+date: "2024-12-12"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#LOAD PACKAGES 
