@@ -13,7 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tm)
 library(tidytext)
-library(ggplot2)
 library(lubridate)
 
 
@@ -34,5 +33,26 @@ tweetsDF$text <- gsub("<a href=httptwitter.comdownloadandroid rel=nofollow>twitt
 tweetsDF$text <- gsub("<a href= rel=nofollow>twitter web app<a>", "", tweetsDF$text)
 tweetsDF$text <- gsub("30102022", "", tweetsDF$text)
 tweetsDF$text <- gsub("\\s+", " ", tweetsDF$text)
+```
+#TREND ANALYSIS
+# For our trend analysis, we used the 'created' column and the number of tweets to generate a line graph. The 'created' column provides the date and time each tweet was posted. Our goal was to identify periods of peak activity and explore the potential reasons behind these trends. We also plan to search for articles online to investigate what might have caused the spikes in tweet activity after the tragedy.
+```{r}
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+
+file_path <- "tweetsDF.csv"
+tweets_df <- read.csv(file_path)
+
+tweets_df$created <- ymd_hms(tweets_df$created)
+
+tweets_per_time <- tweets_df %>%
+mutate(hour = floor_date(created, "hour")) %>%
+count(hour)
+
+ggplot(tweets_per_time, aes(x = hour, y = n)) +
+geom_line(color = "blue") +
+labs(title = "Number of Tweets Over Time", x = "Time", y = "Number of Tweets") +
+theme_minimal()
 ```
 
