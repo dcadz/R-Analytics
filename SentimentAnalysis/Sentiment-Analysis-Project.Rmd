@@ -9,3 +9,30 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 #LOAD PACKAGES 
+```{r}
+library(dplyr)
+library(tm)
+library(tidytext)
+library(ggplot2)
+library(lubridate)
+
+
+tweetsDF <- read.csv("tweetsDF.csv")
+```
+# DATA CLEANING
+```{r}
+tweetsDF$text <- iconv(tweetsDF$text, from = "UTF-8", to = "ASCII//TRANSLIT", sub = "")
+tweetsDF$text <- tolower(tweetsDF$text)
+tweetsDF$text <- gsub("https\\S+", "", tweetsDF$text)
+tweetsDF$text <- gsub("#", "", gsub("\n", " ", tweetsDF$text))
+tweetsDF$text <- gsub("([@?]\\S+)", "", tweetsDF$text)
+tweetsDF$text <- gsub("\\?", "", tweetsDF$text)
+tweetsDF$text <- gsub("\\b\\d{2}\\.\\d{2}\\.\\d{4}\\b", "", tweetsDF$text)
+tweetsDF$text <- gsub("<a href=httptwitter.comdownloadiphone rel=nofollow>twitter for iphone<a>", "", tweetsDF$text)
+tweetsDF$text <- gsub("<a href=([^>]*?) rel=nofollow>([^<]*?)<a>", "", tweetsDF$text)
+tweetsDF$text <- gsub("<a href=httptwitter.comdownloadandroid rel=nofollow>twitter for android<a>", "", tweetsDF$text)
+tweetsDF$text <- gsub("<a href= rel=nofollow>twitter web app<a>", "", tweetsDF$text)
+tweetsDF$text <- gsub("30102022", "", tweetsDF$text)
+tweetsDF$text <- gsub("\\s+", " ", tweetsDF$text)
+```
+
