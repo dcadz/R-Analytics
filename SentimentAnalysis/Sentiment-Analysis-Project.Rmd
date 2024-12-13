@@ -1,14 +1,14 @@
 ---
 title: "Sentiment-Analysis"
 author: "Cadiz, Guion, Jacildo"
-date: "2024-12-12"
+date: "2024-12-08"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-#LOAD PACKAGES 
+## LOAD PACKAGES 
 ```{r}
 library(dplyr)
 library(tm)
@@ -18,7 +18,7 @@ library(lubridate)
 
 tweetsDF <- read.csv("tweetsDF.csv")
 ```
-# DATA CLEANING
+## DATA CLEANING
 ```{r}
 tweetsDF$text <- iconv(tweetsDF$text, from = "UTF-8", to = "ASCII//TRANSLIT", sub = "")
 tweetsDF$text <- tolower(tweetsDF$text)
@@ -34,8 +34,16 @@ tweetsDF$text <- gsub("<a href= rel=nofollow>twitter web app<a>", "", tweetsDF$t
 tweetsDF$text <- gsub("30102022", "", tweetsDF$text)
 tweetsDF$text <- gsub("\\s+", " ", tweetsDF$text)
 ```
-#TREND ANALYSIS
-# For our trend analysis, we used the 'created' column and the number of tweets to generate a line graph. The 'created' column provides the date and time each tweet was posted. Our goal was to identify periods of peak activity and explore the potential reasons behind these trends. We also plan to search for articles online to investigate what might have caused the spikes in tweet activity after the tragedy.
+
+
+## TREND ANALYSIS
+
+For our trend analysis, we used the 'created' column and the number of tweets 
+to generate a line graph. The 'created' column provides the date and time each 
+tweet was posted. Our goal was to identify periods of peak activity and explore
+the potential reasons behind these trends. We also plan to search for articles 
+online to investigate what might have caused the spikes in tweet activity after
+the tragedy.
 ```{r}
 library(ggplot2)
 library(lubridate)
@@ -55,11 +63,27 @@ geom_line(color = "blue") +
 labs(title = "Number of Tweets Over Time", x = "Time", y = "Number of Tweets") +
 theme_minimal()
 ```
-# The graph shows that tweets about Itaewon were few before midnight on October 29. A noticeable spike occurred after midnight, with the highest activity in the early hours of October 30. Activity levels decreased throughout the morning but rose again in the afternoon and evening.
-# Upon researching the timeline of events, we discovered that the Itaewon tragedy occurred at 10:30 PM on October 29. Reports indicate that the police confirmed the death toll at 2:30 AM, which likely contributed to the early morning peak in tweets.The rise in the evening may be due to more people becoming aware of and talking about the tragedy.
 
-# SENTIMENT ANALYSIS
-# The dataset contains tweets about the Itaewon tragedy in 2022 under the ‘text’ column. We aim to analyze the sentiment of these tweets to understand public reactions. By categorizing sentiments as either positive or negative and visualizing them, we can determine the overall tone of the conversations and explore how people responded emotionally to the event. 
+The graph shows that tweets about Itaewon were few before midnight on 
+October 29. A noticeable spike occurred after midnight, with the highest 
+activity in the early hours of October 30. Activity levels decreased throughout 
+the morning but rose again in the afternoon and evening.
+
+Upon researching the timeline of events, we discovered that the Itaewon tragedy
+occurred at 10:30 PM on October 29. Reports indicate that the police confirmed 
+the death toll at 2:30 AM, which likely contributed to the early morning peak in
+tweets.The rise in the evening may be due to more people becoming aware of and 
+talking about the tragedy.
+
+
+## SENTIMENT ANALYSIS
+
+The dataset contains tweets about the Itaewon tragedy in 2022 under the 
+‘text’ column. We aim to analyze the sentiment of these tweets to understand 
+public reactions. By categorizing sentiments as either positive or negative and
+visualizing them, we can determine the overall tone of the conversations and 
+explore how people responded emotionally to the event. 
+
 ```{r}
 library(tidytext)
 library(dplyr)
@@ -82,11 +106,20 @@ geom_bar(stat = "identity") +
 labs(title = "Sentiment Analysis", x = "Sentiment", y = "Percentage") +
 theme_minimal()
 ```
-# For our graph, the x-axis represents the sentiment categories (negative and positive), while the y-axis represents the percentage of tweets in each category. The bar graph indicates a higher percentage of negative tweets compared to positive ones. That highlights that the majority of tweets are negative. This indicates a strong emotional reaction to the event, possibly driven by distress, outrage, or grief.
+
+For our graph, the x-axis represents the sentiment categories 
+(negative and positive), while the y-axis represents the percentage of tweets 
+in each category. The bar graph indicates a higher percentage of negative tweets
+compared to positive ones. That highlights that the majority of tweets are 
+negative. This indicates a strong emotional reaction to the event, possibly 
+driven by distress, outrage, or grief.
 
 
-# ADDITIONAL GRAPH
-# The dataset contains tweets categorized by their source platforms, such as iPhone, Android, and others.For additional information, we wanted to identify which platforms users mostly used to engage with the content. 
+## ADDITIONAL GRAPH
+
+The dataset contains tweets categorized by their source platforms, such as 
+iPhone, Android, and others.For additional information, we wanted to identify 
+which platforms users mostly used to engage with the content. 
 ```{r}
 tweet_source_analysis <- tweets_df %>%
 group_by(tweetSource) %>%
@@ -104,5 +137,10 @@ y = "Number of Tweets"
 theme_minimal() +
 theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-# The bar graph visualizes the number of tweets categorized by their source.The x-axis represents the tweet sources (e.g., iPhone, Android, others), while the y-axis shows the total number of tweets from each sourceThe bars indicate the volume of tweets contributed by each platform, with iPhone and Android having significantly higher counts than other sources.
+
+The bar graph visualizes the number of tweets categorized by their source.
+The x-axis represents the tweet sources (e.g., iPhone, Android, others), while 
+the y-axis shows the total number of tweets from each sourceThe bars indicate 
+the volume of tweets contributed by each platform, with iPhone and Android 
+having significantly higher counts than other sources.
 
