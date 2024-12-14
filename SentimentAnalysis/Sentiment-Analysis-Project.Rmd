@@ -33,6 +33,10 @@ tweetsDF$text <- gsub("<a href=httptwitter.comdownloadandroid rel=nofollow>twitt
 tweetsDF$text <- gsub("<a href= rel=nofollow>twitter web app<a>", "", tweetsDF$text)
 tweetsDF$text <- gsub("30102022", "", tweetsDF$text)
 tweetsDF$text <- gsub("\\s+", " ", tweetsDF$text)
+
+oneKTweetsDF <- head(tweetsDF, 1000)
+
+write.csv(oneKTweetsDF, "cleanTweets.csv", row.names = FALSE)
 ```
 
 
